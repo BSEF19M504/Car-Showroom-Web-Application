@@ -1,0 +1,72 @@
+﻿@using System.Reflection
+@using Car_Showroom_Web_Application.Models
+
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Car myObject = (Car)ViewData["car"];
+}
+
+<script>
+    var x = document.getElementsByClassName("mySlides");
+    for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+    }
+    clearTimeout(myTimeout);
+</script>
+
+@if (Session["user"] != null)
+{
+    if (myObject != null)
+    {
+        <table class="table">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Attribute</th>
+                    <th>Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    Type myType = myObject.GetType();
+
+                    PropertyInfo[] field = myType.GetProperties();
+
+                    for (int i = 1; i < field.Length - 1; i++)
+                    {
+                        <tr>
+                            <th scope="row">@i</th>
+                            <td>@field[i].Name</td>
+                            <td>@field[i].GetValue(myObject)</td>
+                        </tr>
+                    }
+                    <tr>
+                        <th scope="row">@(field.Length - 1)</th>
+                        <td>Last Edited by</td>
+                        <td>@UserDAO.GetUserById(myObject.UserId).UserName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Index", "Cars") + "'");">Go Back</button>
+        </div>
+    }
+    else
+    {
+        <div class="p-3">
+            No car found against this ID
+        </div>
+        <br />
+        <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Index", "Cars") + "'");">Go Back</button>
+    }
+}
+else
+{
+    <div class="p-3">
+        You are not logged in!
+    </div>
+    <br />
+    <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Login", "Cars") + "'");">Login</button>
+}

@@ -1,0 +1,100 @@
+﻿@using Car_Showroom_Web_Application.Models
+@model Car_Showroom_Web_Application.Models.Car
+
+@{
+    string error;
+    Car c = (Car)ViewData["car"];
+    ViewData.Remove("car");
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    if (Session["error"] == null)
+    {
+        error = "";
+    }
+    else
+    {
+        error = (String)Session["error"];
+        Session.Remove("error");
+    }
+}
+
+<script>
+    var x = document.getElementsByClassName("mySlides");
+    for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+    }
+    clearTimeout(myTimeout);
+</script>
+
+@if (Session["User"] != null)
+{
+    if (c != null)
+    {
+        if (!string.IsNullOrEmpty(error))
+        {
+            <div class="alert alert-danger alert-dismissible fade show">
+                <strong>Error!</strong> @error
+            </div>
+        }
+
+        using (Html.BeginForm("EditForm", "Cars", FormMethod.Post, new { onsubmit = "return validateCar(event)", name = "edit" }))
+        {
+            <div class="form-group">
+                <label for="inputMake">Make</label>
+                @Html.TextBoxFor(m => m.Make, new { @type = "text", Class = "form-control", id = "inputMake", placeholder = "Make", @Value = c.Make })
+                <div id="mak" style="font-size: 11px; color: #FF0000;"></div>
+            </div>
+            <div class="form-group">
+                <label for="inputModel">Model</label>
+                @Html.TextBoxFor(m => m.Model, new { @type = "text", Class = "form-control", id = "inputModel", placeholder = "Model", @Value = c.Model })
+                <div id="mod" style="font-size: 11px; color: #FF0000;"></div>
+            </div>
+            <div class="form-group">
+                <label for="inputYear">Year</label>
+                @Html.TextBoxFor(m => m.Year, new { @type = "text", Class = "form-control", id = "inputYear", placeholder = "Year", onKeyPress = "return letterNumber(event)", @Value = c.Year.ToString() })
+                <div id="yer" style="font-size: 11px; color: #FF0000;"></div>
+            </div>
+            <div class="form-group">
+                <label for="inputMileage">Mileage</label>
+                @Html.TextBoxFor(m => m.Mileage, new { @type = "text", Class = "form-control", id = "inputMileage", placeholder = "Mileage", onKeyPress = "return letterNumber(event)", @Value = c.Mileage.ToString() })
+                <div id="mil" style="font-size: 11px; color: #FF0000;"></div>
+            </div>
+            <div class="form-group">
+                <label for="inputPrice">Price</label>
+
+                @Html.TextBoxFor(m => m.Price, new { @type = "text", Class = "form-control", id = "inputPrice", placeholder = "Price", onKeyPress = "return letterNumber(event)", @Value = c.Price.ToString() })
+                <div id="pri" style="font-size: 11px; color: #FF0000;"></div>
+            </div>
+            <div class="form-group">
+
+                @Html.HiddenFor(m => m.Id, new { Class = "form-control", @Value = c.Id.ToString() })
+            </div>
+            <br />
+            <div class="row gx-5">
+                <div class="col-2">
+                    <input type="submit" class="btn btn-primary btn-lg" name="cancel" value="Cancel" />
+                </div>
+                <div class="col">
+                    <input type="submit" class="btn btn-primary btn-lg" name="save" value="Save" />
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="p-3">
+            No car found against this ID
+        </div>
+        <br />
+        <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Index", "Cars") + "'");">Go Back</button>
+    }
+
+}
+else
+{
+    <div class="p-3">
+        You are not logged in!
+    </div>
+    <br />
+    <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Login", "Cars") + "'");">Login</button>
+}

@@ -1,0 +1,66 @@
+﻿@model Car_Showroom_Web_Application.Models.User
+
+@{
+    string error;
+    string email;
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    if (Session["error"] == null)
+    {
+        error = "";
+        email = "";
+    }
+    else
+    {
+        error = (String)Session["error"];
+        Session.Remove("error");
+        if (Session["email"] == null)
+        {
+            email = "";
+        }
+        else
+        {
+            email = (String)Session["email"];
+            Session.Remove("email");
+        }
+    }
+}
+<br />
+@if (Session["User"] == null)
+{
+    if (!string.IsNullOrEmpty(error))
+    {
+        Session.Remove("error");
+        <div class="alert alert-danger alert-dismissible fade show">
+            <strong>Error!</strong> @error
+        </div>
+    }
+    using (Html.BeginForm("LoginForm", "Cars", FormMethod.Post, new { onsubmit = "return validateLogin()", name = "login" }))
+    {
+        <div class="form-group">
+            <label for="inputName">Email</label>
+            @Html.TextBoxFor(m => m.Email, new { @type = "email", Class = "form-control", id = "inputEmail", placeholder = "Email", @Value = email })
+            <div id="ema" style="font-size: 11px; color: #FF0000;"></div>
+        </div>
+        <div class="form-group">
+            <label for="inputPassword">Password</label>
+            @Html.TextBoxFor(m => m.Password, new { @type = "password", Class = "form-control", id = "inputPassword", placeholder = "Password" })
+            <div id="pas" style="font-size: 11px; color: #FF0000;"></div>
+        </div>
+        <div class="form-group">
+            <label class="form-check-label"><input type="checkbox" name="remember" > Remember me</label>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Sign in" />
+    }
+
+}
+else
+{
+    <div class="p-3">
+        You are already logged in!
+    </div>
+    <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Index", "Cars") + "'");">Go Back</button>
+    <br/>
+    <br/>
+    <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Logout", "Cars") + "'");">Logout</button>
+}

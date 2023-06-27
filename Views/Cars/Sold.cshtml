@@ -1,0 +1,71 @@
+﻿@using Car_Showroom_Web_Application.Models
+
+@{
+    ViewBag.Title = "Sold";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    var x = document.getElementsByClassName("mySlides");
+    for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+    }
+    clearTimeout(myTimeout);
+</script>
+
+@if (Session["User"] != null)
+{
+    Dictionary<Car, DateTime> ls = (Dictionary<Car, DateTime>)ViewData["soldList"];
+    if (ls.Count != 0)
+    {
+<table class="table table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Mileage</th>
+            <th>Price</th>
+            <th>Date of Sale</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int i = 1; }
+
+        @foreach (KeyValuePair<Car, DateTime> entry in ls)
+        {
+            <tr>
+                <th scope="row">@i</th>
+                <td>@entry.Key.Make</td>
+                <td>@entry.Key.Model</td>
+                <td>@entry.Key.Year</td>
+                <td>@entry.Key.Mileage</td>
+                <td>@entry.Key.Price</td>
+                <td>@entry.Value.ToString("F")</td>
+                @{ i++; }
+            </tr>
+        }
+    </tbody>
+</table>
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Index", "Cars") + "'");">Go Back</button>
+        </div>
+    }
+    else
+    {
+        <div class="p-3">
+            No Cars sold in last 90 days!
+        </div>
+        <br />
+        <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Index", "Cars") + "'");">Go Back</button>
+    }
+}
+else
+{
+<div class="p-3">
+    You are not logged in!
+</div>
+<br />
+<button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Login", "Cars") + "'");">Login</button>
+}

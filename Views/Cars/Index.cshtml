@@ -1,0 +1,144 @@
+﻿@using Car_Showroom_Web_Application.Models
+@model Car_Showroom_Web_Application.Models.Car
+
+<script>
+    if (performance.navigation.type == 2) {
+        location.reload(true);
+    }
+</script>
+@{
+    string success;
+    string error;
+    if (Session["error"] == null)
+    {
+        error = "";
+    }
+    else
+    {
+        error = (String)Session["error"];
+        Session.Remove("error");
+    }
+    if (Session["success"] == null)
+    {
+        success = "";
+    }
+    else
+    {
+        success = (String)Session["success"];
+        Session.Remove("success");
+    }
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    <div class="d-flex justify-content-center">
+        @if (!string.IsNullOrEmpty(error))
+        {
+            Session.Remove("error");
+            <div class="alert alert-danger alert-dismissible fade show">
+                <strong>Error!</strong> @error
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(success))
+        {
+            Session.Remove("success");
+            <div class="alert alert-success alert-dismissible fade show">
+                <strong>Success!</strong> @success
+            </div>
+        }
+    </div>
+
+    <div class="row gx-5">
+        <div class="col">
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Add", "Cars") + "'");">Add New Car</button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Sold", "Cars") + "'");">Show Sold Car</button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary btn-lg" onclick="@("window.location.href='" + @Url.Action("Logout", "Cars") + "'");">Logout</button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Search for cars" id="textCars"  style="margin-left: 35%">
+        <div class="input-group-addon">
+            <button class="btn btn-primary btn-lg" type="button" onclick="search()">Search</button>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" integrity="sha384-xewr6kSkq3dBbEtB6Z/3oFZmknWn7nHqhLVLrYgzEFRbU/DHSxW7K3B44yWUN60D" crossorigin="anonymous">
+
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+    <script>
+        $("#textCars").autocomplete({
+            source: function(request,response) {
+                $.ajax({
+                    url: "@Url.Action("CarSearch", "Cars")",
+                    type: "POST",
+                    dataType: "json",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item };
+                        }));
+
+                    }
+                });
+            },
+            messages : {
+                noResults : '',
+                results : function(resultsCount) {}
+            }
+        });
+    </script>
+    <br />
+    List<Car> ls = (List<Car>)ViewData["subList"];
+    if (ls.Count != 0)
+    {
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th>Year</th>
+                    <th>Price</th>
+                    <th>Edit</th>
+                    <th>Sell</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int i = 1; }
+
+                @foreach (Car c in ls)
+                {
+                    <tr>
+                        <th scope="row">@i</th>
+                        <td onclick="window.location.href='/Cars/Detail?id=@c.Id';">@c.Make</td>
+                        <td onclick="window.location.href='/Cars/Detail?id=@c.Id';">@c.Model</td>
+                        <td onclick="window.location.href='/Cars/Detail?id=@c.Id';">@c.Year</td>
+                        <td onclick="window.location.href='/Cars/Detail?id=@c.Id';">@c.Price</td>
+                        <td><a href="/Cars/Edit?id=@c.Id">Edit</a></td>
+                        <td><a href="/Cars/Sell?id=@c.Id">Sell</a></td>
+                        @{ i++; }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="p-3">
+            No Cars available in the Showroom!
+        </div>
+    }
+}
